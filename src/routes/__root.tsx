@@ -1,6 +1,4 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { AuthProvider } from "@/lib/auth";
-import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 
@@ -31,10 +29,25 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Pulse — Fitness & Nutrition Tracker" },
-      { name: "description", content: "Track workouts, meals, and your consistency." },
+      { title: "Lovable App" },
+      { name: "description", content: "Track workouts, nutrition, and daily progress with Fit Journey Tracker." },
+      { name: "author", content: "Lovable" },
+      { property: "og:title", content: "Lovable App" },
+      { property: "og:description", content: "Track workouts, nutrition, and daily progress with Fit Journey Tracker." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Lovable App" },
+      { name: "twitter:description", content: "Track workouts, nutrition, and daily progress with Fit Journey Tracker." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/89034bd4-1b67-4e4f-9a98-ba84f2495382/id-preview-ed50a672--93904205-c0f4-4817-abbf-084bc7bed7d0.lovable.app-1776625665408.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/89034bd4-1b67-4e4f-9a98-ba84f2495382/id-preview-ed50a672--93904205-c0f4-4817-abbf-084bc7bed7d0.lovable.app-1776625665408.png" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      {
+        rel: "stylesheet",
+        href: appCss,
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -56,10 +69,5 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return (
-    <AuthProvider>
-      <Outlet />
-      <Toaster />
-    </AuthProvider>
-  );
+  return <Outlet />;
 }
