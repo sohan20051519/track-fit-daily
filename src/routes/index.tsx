@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { format, subDays, eachDayOfInterval } from "date-fns";
 import { RequireAuth } from "@/components/RequireAuth";
@@ -7,7 +7,6 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Flame, Beef, Dumbbell, Flame as Fire } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [{ title: "Today — Pulse" }] }),
@@ -30,27 +29,29 @@ function Today() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [calories, setCalories] = useState(0);
   const [protein, setProtein] = useState(0);
-  const [workoutCount, setWorkoutCount] = useState(0);
+  const [exerciseCount, setExerciseCount] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [todayWeight, setTodayWeight] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: p }, { data: meals }, { data: workouts }, { data: weekWorkouts }] = await Promise.all([
+      const [{ data: p }, { data: meals }, { data: workouts }, { data: weekWorkouts }, { data: w }] = await Promise.all([
         supabase.from("profiles").select("display_name, daily_calorie_goal, daily_protein_goal").eq("id", user.id).maybeSingle(),
         supabase.from("meals").select("calories, protein_g").eq("date", today),
         supabase.from("workouts").select("id").eq("date", today),
         supabase.from("workouts").select("date").gte("date", format(subDays(new Date(), 30), "yyyy-MM-dd")),
+        supabase.from("weight_logs").select("weight_kg").eq("date", today).maybeSingle(),
       ]);
       setProfile(p);
       setCalories((meals ?? []).reduce((s, m) => s + (m.calories ?? 0), 0));
       setProtein((meals ?? []).reduce((s, m) => s + Number(m.protein_g ?? 0), 0));
-      setWorkoutCount((workouts ?? []).length);
+      setExerciseCount((workouts ?? []).length);
+      setTodayWeight(w ? Number(w.weight_kg) : null);
 
-      // Streak: consecutive days with at least one workout OR meal
       const { data: mealDates } = await supabase.from("meals").select("date").gte("date", format(subDays(new Date(), 30), "yyyy-MM-dd"));
       const activeSet = new Set<string>([
-        ...(weekWorkouts ?? []).map((w) => w.date),
+        ...(weekWorkouts ?? []).map((x) => x.date),
         ...(mealDates ?? []).map((m) => m.date),
       ]);
       let s = 0;
@@ -73,11 +74,14 @@ function Today() {
         <h1 className="mt-1 text-4xl font-semibold tracking-tight">
           Hi, {profile?.display_name ?? "there"}.
         </h1>
+        {todayWeight && (
+          <p className="mt-1 text-sm text-muted-foreground">Today's weight: <span className="font-medium text-foreground">{todayWeight} kg</span></p>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat icon={<Fire className="h-5 w-5" />} label="Streak" value={`${streak}`} hint="day(s) active" tone="primary" />
-        <Stat icon={<Dumbbell className="h-5 w-5" />} label="Workouts today" value={`${workoutCount}`} hint="exercises logged" tone="accent" />
+        <Stat icon={<Dumbbell className="h-5 w-5" />} label="Exercises today" value={`${exerciseCount}`} hint="logged" tone="accent" />
         <Stat icon={<Flame className="h-5 w-5" />} label="Calories" value={`${calories}`} hint={`/ ${calGoal}`} tone="primary" />
         <Stat icon={<Beef className="h-5 w-5" />} label="Protein" value={`${Math.round(protein)}g`} hint={`/ ${proGoal}g`} tone="accent" />
       </div>
@@ -95,10 +99,10 @@ function Today() {
         </Card>
         <Card className="p-6">
           <h2 className="text-lg font-semibold">Today's training</h2>
-          {workoutCount === 0 ? (
-            <p className="mt-4 text-sm text-muted-foreground">No workouts logged yet.</p>
+          {exerciseCount === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">No exercises logged yet.</p>
           ) : (
-            <p className="mt-4 text-sm text-muted-foreground">{workoutCount} exercise(s) logged today.</p>
+            <p className="mt-4 text-sm text-muted-foreground">{exerciseCount} exercise(s) logged today.</p>
           )}
           <Link to="/workouts" className="mt-4 inline-block text-sm font-medium text-primary hover:underline">
             Log a workout →
@@ -130,9 +134,7 @@ function Bar({ label, value, max, unit }: { label: string; value: number; max: n
     <div>
       <div className="mb-1.5 flex items-baseline justify-between">
         <span className="text-sm font-medium">{label}</span>
-        <span className="text-sm text-muted-foreground">
-          {value} / {max} {unit}
-        </span>
+        <span className="text-sm text-muted-foreground">{value} / {max} {unit}</span>
       </div>
       <Progress value={pct} />
     </div>
@@ -163,7 +165,7 @@ function ConsistencyStrip() {
         <h2 className="text-lg font-semibold">Last 28 days</h2>
         <span className="text-sm text-muted-foreground">{active.size} active days</span>
       </div>
-      <div className="grid grid-cols-14 gap-1.5 sm:grid-cols-28" style={{ gridTemplateColumns: "repeat(28, minmax(0, 1fr))" }}>
+      <div className="grid gap-1.5" style={{ gridTemplateColumns: "repeat(28, minmax(0, 1fr))" }}>
         {days.map((d) => {
           const k = format(d, "yyyy-MM-dd");
           const on = active.has(k);

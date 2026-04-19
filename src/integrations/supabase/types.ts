@@ -19,6 +19,7 @@ export type Database = {
           calories: number
           created_at: string
           date: string
+          grams: number | null
           id: string
           meal_type: string
           name: string
@@ -29,6 +30,7 @@ export type Database = {
           calories?: number
           created_at?: string
           date?: string
+          grams?: number | null
           id?: string
           meal_type?: string
           name: string
@@ -39,6 +41,7 @@ export type Database = {
           calories?: number
           created_at?: string
           date?: string
+          grams?: number | null
           id?: string
           meal_type?: string
           name?: string
@@ -49,28 +52,70 @@ export type Database = {
       }
       profiles: {
         Row: {
+          activity_level: string | null
+          birth_date: string | null
           created_at: string
           daily_calorie_goal: number
           daily_protein_goal: number
           display_name: string | null
+          gender: string | null
+          goal_type: string | null
+          height_cm: number | null
           id: string
+          onboarded: boolean
           updated_at: string
         }
         Insert: {
+          activity_level?: string | null
+          birth_date?: string | null
           created_at?: string
           daily_calorie_goal?: number
           daily_protein_goal?: number
           display_name?: string | null
+          gender?: string | null
+          goal_type?: string | null
+          height_cm?: number | null
           id: string
+          onboarded?: boolean
           updated_at?: string
         }
         Update: {
+          activity_level?: string | null
+          birth_date?: string | null
           created_at?: string
           daily_calorie_goal?: number
           daily_protein_goal?: number
           display_name?: string | null
+          gender?: string | null
+          goal_type?: string | null
+          height_cm?: number | null
           id?: string
+          onboarded?: boolean
           updated_at?: string
+        }
+        Relationships: []
+      }
+      weight_logs: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          user_id: string
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          user_id: string
+          weight_kg: number
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          user_id?: string
+          weight_kg?: number
         }
         Relationships: []
       }
