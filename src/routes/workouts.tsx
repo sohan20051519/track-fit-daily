@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { BODY_PARTS, EXERCISES_BY_PART } from "@/lib/constants";
-import { Plus, Trash2, Dumbbell } from "lucide-react";
+import { Plus, Minus, Trash2, Dumbbell } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/workouts")({
@@ -30,12 +30,18 @@ interface WorkoutItem {
   sets: { id: string; set_number: number; reps: number; weight_kg: number }[];
 }
 
+function makeSets(count: number, base?: SetRow): SetRow[] {
+  const b = base ?? { reps: "10", kg: "20" };
+  return Array.from({ length: count }, () => ({ ...b }));
+}
+
 function WorkoutsPage() {
   const { user } = useAuth();
   const today = format(new Date(), "yyyy-MM-dd");
   const [bodyPart, setBodyPart] = useState<string>("Chest");
   const [exercise, setExercise] = useState<string>(EXERCISES_BY_PART["Chest"][0]);
-  const [sets, setSets] = useState<SetRow[]>([{ reps: "10", kg: "20" }]);
+  const [setCount, setSetCount] = useState(3);
+  const [sets, setSets] = useState<SetRow[]>(makeSets(3));
   const [items, setItems] = useState<WorkoutItem[]>([]);
   const [busy, setBusy] = useState(false);
 
@@ -55,17 +61,24 @@ function WorkoutsPage() {
     setItems(mapped);
   };
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [user]);
 
   useEffect(() => {
     setExercise(EXERCISES_BY_PART[bodyPart][0]);
   }, [bodyPart]);
 
-  const addSet = () => setSets((s) => [...s, { reps: "10", kg: "20" }]);
-  const removeSet = (i: number) => setSets((s) => s.filter((_, idx) => idx !== i));
+  // Sync sets array length with setCount; preserve existing values
+  useEffect(() => {
+    setSets((prev) => {
+      if (setCount === prev.length) return prev;
+      if (setCount > prev.length) {
+        const last = prev[prev.length - 1] ?? { reps: "10", kg: "20" };
+        return [...prev, ...Array.from({ length: setCount - prev.length }, () => ({ ...last }))];
+      }
+      return prev.slice(0, setCount);
+    });
+  }, [setCount]);
+
   const updateSet = (i: number, key: keyof SetRow, val: string) =>
     setSets((s) => s.map((row, idx) => (idx === i ? { ...row, [key]: val } : row)));
 
@@ -93,7 +106,8 @@ function WorkoutsPage() {
     if (e2) toast.error(e2.message);
     else {
       toast.success("Workout logged");
-      setSets([{ reps: "10", kg: "20" }]);
+      setSetCount(3);
+      setSets(makeSets(3));
       load();
     }
     setBusy(false);
@@ -108,7 +122,7 @@ function WorkoutsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Workouts</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Log today's training, set by set.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Log today's training.</p>
       </div>
 
       <Card className="p-6">
@@ -135,26 +149,47 @@ function WorkoutsPage() {
         </div>
 
         <div className="mt-6 space-y-2">
-          <Label>Sets</Label>
-          <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label>Total sets</Label>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                className="h-8 w-8"
+                onClick={() => setSetCount((c) => Math.max(1, c - 1))}
+                aria-label="Fewer sets"
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <span className="w-8 text-center text-lg font-semibold tabular-nums">{setCount}</span>
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                className="h-8 w-8"
+                onClick={() => setSetCount((c) => Math.min(20, c + 1))}
+                aria-label="More sets"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-3 space-y-2">
+            <div className="grid grid-cols-[2rem_1fr_1fr] items-center gap-2 px-1 text-xs text-muted-foreground">
+              <span>Set</span>
+              <span>Reps</span>
+              <span>Weight (kg)</span>
+            </div>
             {sets.map((s, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span className="w-8 text-sm text-muted-foreground">#{i + 1}</span>
-                <Input type="number" inputMode="numeric" placeholder="Reps" value={s.reps} onChange={(e) => updateSet(i, "reps", e.target.value)} />
-                <span className="text-sm text-muted-foreground">×</span>
-                <Input type="number" inputMode="decimal" placeholder="Kg" value={s.kg} onChange={(e) => updateSet(i, "kg", e.target.value)} />
-                <span className="text-sm text-muted-foreground">kg</span>
-                {sets.length > 1 && (
-                  <Button size="icon" variant="ghost" onClick={() => removeSet(i)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
+              <div key={i} className="grid grid-cols-[2rem_1fr_1fr] items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground">#{i + 1}</span>
+                <Input type="number" inputMode="numeric" value={s.reps} onChange={(e) => updateSet(i, "reps", e.target.value)} />
+                <Input type="number" inputMode="decimal" value={s.kg} onChange={(e) => updateSet(i, "kg", e.target.value)} />
               </div>
             ))}
           </div>
-          <Button variant="outline" size="sm" onClick={addSet} className="mt-2">
-            <Plus className="mr-1 h-4 w-4" /> Add set
-          </Button>
         </div>
 
         <Button className="mt-6 w-full sm:w-auto" disabled={busy} onClick={save}>

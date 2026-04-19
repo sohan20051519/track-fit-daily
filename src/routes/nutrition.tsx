@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import { RequireAuth } from "@/components/RequireAuth";
 import { Card } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { COMMON_FOODS, MEAL_TYPES } from "@/lib/constants";
+import { COMMON_FOODS, MEAL_TYPES, scaleMacros, type FoodPreset } from "@/lib/constants";
 import { Plus, Trash2, Utensils } from "lucide-react";
 import { toast } from "sonner";
 
@@ -23,50 +23,80 @@ export const Route = createFileRoute("/nutrition")({
 });
 
 interface MealRow {
-  id: string; name: string; meal_type: string; calories: number; protein_g: number;
+  id: string; name: string; meal_type: string; calories: number; protein_g: number; grams: number | null;
 }
 
 function NutritionPage() {
   const { user } = useAuth();
   const today = format(new Date(), "yyyy-MM-dd");
-  const [name, setName] = useState("");
+  const [mode, setMode] = useState<"preset" | "custom">("preset");
+  const [presetName, setPresetName] = useState<string>(COMMON_FOODS[0].name);
+  const [grams, setGrams] = useState<string>(String(COMMON_FOODS[0].defaultGrams ?? 100));
+  const [customName, setCustomName] = useState("");
+  const [customCal, setCustomCal] = useState("");
+  const [customPro, setCustomPro] = useState("");
   const [mealType, setMealType] = useState<string>("breakfast");
-  const [cal, setCal] = useState("");
-  const [pro, setPro] = useState("");
   const [items, setItems] = useState<MealRow[]>([]);
   const [busy, setBusy] = useState(false);
+
+  const preset = useMemo<FoodPreset | undefined>(
+    () => COMMON_FOODS.find((f) => f.name === presetName),
+    [presetName]
+  );
+  const scaled = useMemo(() => {
+    if (!preset) return { calories: 0, protein_g: 0 };
+    return scaleMacros(preset, parseFloat(grams) || 0);
+  }, [preset, grams]);
 
   const load = async () => {
     if (!user) return;
     const { data } = await supabase
       .from("meals")
-      .select("id, name, meal_type, calories, protein_g")
+      .select("id, name, meal_type, calories, protein_g, grams")
       .eq("date", today)
       .order("created_at", { ascending: false });
-    setItems((data ?? []).map((m: any) => ({ ...m, protein_g: Number(m.protein_g) })));
+    setItems((data ?? []).map((m: any) => ({ ...m, protein_g: Number(m.protein_g), grams: m.grams != null ? Number(m.grams) : null })));
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [user]);
 
-  const pickPreset = (n: string) => {
-    const f = COMMON_FOODS.find((x) => x.name === n);
-    if (!f) return;
-    setName(f.name);
-    setCal(String(f.calories));
-    setPro(String(f.protein_g));
-  };
+  useEffect(() => {
+    if (preset?.defaultGrams) setGrams(String(preset.defaultGrams));
+  }, [preset]);
 
   const save = async () => {
-    if (!user || !name) return;
+    if (!user) return;
     setBusy(true);
+
+    let payload: { name: string; calories: number; protein_g: number; grams: number | null };
+
+    if (mode === "preset") {
+      if (!preset) { setBusy(false); return; }
+      const g = parseFloat(grams) || 0;
+      const unitLabel = preset.perUnit ? ` (${(g / preset.perUnit.gramsPerUnit).toFixed(1)} ${preset.perUnit.unitLabel})` : "";
+      payload = {
+        name: `${preset.name}${unitLabel}`,
+        calories: scaled.calories,
+        protein_g: scaled.protein_g,
+        grams: g,
+      };
+    } else {
+      if (!customName) { setBusy(false); return; }
+      payload = {
+        name: customName,
+        calories: parseInt(customCal) || 0,
+        protein_g: parseFloat(customPro) || 0,
+        grams: null,
+      };
+    }
+
     const { error } = await supabase.from("meals").insert({
-      user_id: user.id, date: today, name, meal_type: mealType,
-      calories: parseInt(cal) || 0, protein_g: parseFloat(pro) || 0,
+      user_id: user.id, date: today, meal_type: mealType, ...payload,
     });
     if (error) toast.error(error.message);
     else {
       toast.success("Meal logged");
-      setName(""); setCal(""); setPro("");
+      setCustomName(""); setCustomCal(""); setCustomPro("");
       load();
     }
     setBusy(false);
@@ -82,7 +112,7 @@ function NutritionPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-end justify-between">
+      <div className="flex items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Nutrition</h1>
           <p className="mt-1 text-sm text-muted-foreground">Log what you ate today.</p>
@@ -94,45 +124,91 @@ function NutritionPage() {
       </div>
 
       <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold">Add a meal</h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Add a meal</h2>
+          <div className="flex rounded-full bg-secondary p-1 text-xs font-medium">
+            <button
+              onClick={() => setMode("preset")}
+              className={`rounded-full px-3 py-1.5 transition-colors ${mode === "preset" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+            >
+              Common foods
+            </button>
+            <button
+              onClick={() => setMode("custom")}
+              className={`rounded-full px-3 py-1.5 transition-colors ${mode === "custom" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+            >
+              Custom
+            </button>
+          </div>
+        </div>
+
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Quick pick</Label>
-            <Select onValueChange={pickPreset}>
-              <SelectTrigger><SelectValue placeholder="Choose from common foods…" /></SelectTrigger>
+            <Label>Meal</Label>
+            <Select value={mealType} onValueChange={setMealType}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {COMMON_FOODS.map((f) => (
-                  <SelectItem key={f.name} value={f.name}>{f.name} — {f.calories}kcal, {f.protein_g}g P</SelectItem>
-                ))}
+                {MEAL_TYPES.map((m) => <SelectItem key={m} value={m} className="capitalize">{m}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2 sm:col-span-2">
-              <Label>Food name</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Chicken & rice bowl" />
-            </div>
-            <div className="space-y-2">
-              <Label>Meal</Label>
-              <Select value={mealType} onValueChange={setMealType}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {MEAL_TYPES.map((m) => <SelectItem key={m} value={m} className="capitalize">{m}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
+
+          {mode === "preset" ? (
+            <>
               <div className="space-y-2">
-                <Label>Calories</Label>
-                <Input type="number" inputMode="numeric" value={cal} onChange={(e) => setCal(e.target.value)} />
+                <Label>Food</Label>
+                <Select value={presetName} onValueChange={setPresetName}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {COMMON_FOODS.map((f) => <SelectItem key={f.name} value={f.name}>{f.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Portion (grams)</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      value={grams}
+                      onChange={(e) => setGrams(e.target.value)}
+                    />
+                    {preset?.perUnit && (
+                      <span className="whitespace-nowrap text-xs text-muted-foreground">
+                        ≈ {((parseFloat(grams) || 0) / preset.perUnit.gramsPerUnit).toFixed(1)} {preset.perUnit.unitLabel}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-secondary/60 p-3">
+                  <div className="text-xs text-muted-foreground">This will add</div>
+                  <div className="mt-1 text-base font-semibold">
+                    {scaled.calories} kcal · {scaled.protein_g}g protein
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
               <div className="space-y-2">
-                <Label>Protein (g)</Label>
-                <Input type="number" inputMode="decimal" value={pro} onChange={(e) => setPro(e.target.value)} />
+                <Label>Food name</Label>
+                <Input value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder="e.g. Chicken & rice bowl" />
               </div>
-            </div>
-          </div>
-          <Button onClick={save} disabled={busy || !name}>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>Calories</Label>
+                  <Input type="number" inputMode="numeric" value={customCal} onChange={(e) => setCustomCal(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Protein (g)</Label>
+                  <Input type="number" inputMode="decimal" value={customPro} onChange={(e) => setCustomPro(e.target.value)} />
+                </div>
+              </div>
+            </>
+          )}
+
+          <Button onClick={save} disabled={busy || (mode === "custom" && !customName)}>
             <Plus className="mr-1 h-4 w-4" /> Add meal
           </Button>
         </div>
@@ -152,6 +228,7 @@ function NutritionPage() {
                 <div>
                   <div className="text-xs uppercase tracking-wider text-muted-foreground">{m.meal_type}</div>
                   <div className="font-medium">{m.name}</div>
+                  {m.grams && <div className="text-xs text-muted-foreground">{m.grams}g</div>}
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right text-sm">
