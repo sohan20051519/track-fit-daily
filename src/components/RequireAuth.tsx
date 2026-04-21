@@ -3,10 +3,10 @@ import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "./AppSidebar";
+import { AppShell } from "./AppShell";
 import { OnboardingDialog } from "./OnboardingDialog";
 import { WeightPromptDialog } from "./WeightPromptDialog";
+import { Activity } from "lucide-react";
 
 interface ProfileData {
   onboarded: boolean;
@@ -49,23 +49,18 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 
   if (loading || !user || !bootstrapped) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-primary text-primary-foreground shadow-glow animate-float">
+          <Activity className="h-6 w-6" strokeWidth={2.5} />
+        </div>
+        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Loading</div>
       </div>
     );
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
-        <AppSidebar />
-        <SidebarInset>
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border/60 bg-background/80 px-4 backdrop-blur-xl">
-            <SidebarTrigger />
-          </header>
-          <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">{children}</main>
-        </SidebarInset>
-      </div>
+    <>
+      <AppShell>{children}</AppShell>
 
       {profile && !profile.onboarded && (
         <OnboardingDialog
@@ -84,6 +79,6 @@ export function RequireAuth({ children }: { children: ReactNode }) {
           profile={profile}
         />
       )}
-    </SidebarProvider>
+    </>
   );
 }
