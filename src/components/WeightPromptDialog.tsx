@@ -61,7 +61,7 @@ export function WeightPromptDialog({ open, onClose, defaultWeight, profile }: Pr
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
-      <DialogContent className="max-w-sm rounded-3xl p-6 sm:p-8">
+      <DialogContent className="max-w-sm rounded-[28px] glass-strong specular border-white/50 p-5 sm:p-7">
         <DialogHeader className="space-y-3 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-focus text-primary-foreground shadow-soft">
             <Scale className="h-5 w-5" />
