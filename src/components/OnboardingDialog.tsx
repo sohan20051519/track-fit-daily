@@ -132,7 +132,7 @@ export function OnboardingDialog({ open, onDone }: { open: boolean; onDone: () =
   return (
     <Dialog open={open}>
       <DialogContent
-        className="max-w-md rounded-3xl p-6 sm:p-8 [&>button]:hidden"
+        className="max-w-md rounded-[28px] glass-strong specular border-white/50 p-5 sm:p-7 [&>button]:hidden"
         onPointerDownOutside={(e) => e.preventDefault()}
       >
         <DialogHeader className="space-y-3 pb-2 text-center">
