@@ -19,12 +19,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="relative min-h-screen w-full">
-      {/* Animated ambient blobs the glass refracts */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -right-[20%] -top-[15%] h-[55vmax] w-[55vmax] rounded-full opacity-50 blur-3xl animate-drift" style={{ background: "var(--gradient-primary)" }} />
-        <div className="absolute -bottom-[20%] -left-[15%] h-[50vmax] w-[50vmax] rounded-full opacity-40 blur-3xl animate-drift" style={{ background: "var(--gradient-vital)", animationDelay: "-6s" }} />
-        <div className="absolute left-[40%] top-[60%] h-[40vmax] w-[40vmax] rounded-full opacity-30 blur-3xl animate-drift" style={{ background: "var(--gradient-focus)", animationDelay: "-12s" }} />
-      </div>
 
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-3 left-3 z-40 hidden w-60 flex-col rounded-3xl glass specular lg:flex">

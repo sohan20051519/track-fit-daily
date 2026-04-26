@@ -41,13 +41,7 @@ function AuthPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4">
-      {/* Ambient blobs behind the glass */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -right-20 -top-20 h-[60vmax] w-[60vmax] rounded-full opacity-60 blur-3xl animate-drift" style={{ background: "var(--gradient-primary)" }} />
-        <div className="absolute -bottom-20 -left-20 h-[55vmax] w-[55vmax] rounded-full opacity-50 blur-3xl animate-drift" style={{ background: "var(--gradient-vital)", animationDelay: "-6s" }} />
-        <div className="absolute right-1/4 bottom-1/4 h-[40vmax] w-[40vmax] rounded-full opacity-30 blur-3xl animate-drift" style={{ background: "var(--gradient-focus)", animationDelay: "-12s" }} />
-      </div>
+    <div className="relative flex min-h-screen w-full items-center justify-center p-4">
 
       <div className="grid w-full max-w-5xl gap-4 lg:grid-cols-[1.1fr_1fr]">
         {/* Brand panel — glass */}
