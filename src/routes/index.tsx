@@ -5,7 +5,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { ProgressRing } from "@/components/ProgressRing";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Flame, Beef, Dumbbell, ArrowUpRight, Scale, Sparkles, TrendingUp } from "lucide-react";
+import { Flame, Beef, Dumbbell, ArrowUpRight, Scale, Sparkles, TrendingUp, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
@@ -76,118 +76,136 @@ function Today() {
   const days = eachDayOfInterval({ start: subDays(new Date(), 27), end: new Date() });
 
   return (
-    <div className="space-y-5 stagger">
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-6 shadow-card sm:p-8">
-        <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full opacity-30 blur-3xl" style={{ background: "var(--gradient-primary)" }} />
-        <div className="absolute -bottom-20 left-1/3 h-56 w-56 rounded-full opacity-20 blur-3xl" style={{ background: "var(--gradient-vital)" }} />
-
-        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-3 stagger sm:space-y-4">
+      {/* Hero — liquid glass */}
+      <section className="relative overflow-hidden rounded-[28px] glass specular p-5 sm:p-7">
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{format(new Date(), "EEEE · MMMM d")}</p>
-            <h1 className="mt-2 font-serif-display text-4xl leading-[1.05] sm:text-5xl">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{format(new Date(), "EEEE · MMMM d")}</p>
+            <h1 className="mt-1.5 font-serif-display text-[2.4rem] leading-[1] sm:text-5xl">
               {greeting},<br />
               <span className="italic opacity-90">{name}.</span>
             </h1>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1.5 text-xs font-medium backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              {streak > 0 ? `${streak}-day streak — keep going` : "Start your streak today"}
+            <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/50 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
+              <Sparkles className="h-3 w-3 text-primary" />
+              {streak > 0 ? `${streak}-day streak` : "Start your streak"}
             </div>
           </div>
 
           {todayWeight != null && (
-            <div className="flex items-center gap-3 rounded-2xl border border-border bg-background/60 px-4 py-3 backdrop-blur sm:flex-col sm:items-end">
-              <Scale className="h-5 w-5 text-focus" />
+            <div className="flex items-center gap-3 rounded-2xl glass-tint px-3.5 py-2.5 sm:flex-col sm:items-end">
+              <Scale className="h-4 w-4 text-focus" />
               <div className="sm:text-right">
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Today</div>
-                <div className="font-mono text-xl font-semibold">{todayWeight} kg</div>
+                <div className="text-[9px] uppercase tracking-widest text-muted-foreground">Today</div>
+                <div className="font-mono text-lg font-semibold">{todayWeight} kg</div>
               </div>
             </div>
           )}
         </div>
       </section>
 
-      {/* Bento grid */}
-      <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-12">
-        {/* Calories ring – BIG */}
-        <BentoCard className="col-span-2 lg:col-span-5 lg:row-span-2">
-          <div className="flex h-full flex-col">
+      {/* Bento — true asymmetric grid that stays bento on mobile */}
+      <section className="grid auto-rows-[minmax(0,auto)] grid-cols-6 gap-2.5 sm:gap-3 lg:grid-cols-12">
+        {/* Calories ring – HERO TILE */}
+        <BentoTile className="col-span-6 row-span-2 lg:col-span-5">
+          <Link to="/nutrition" className="flex h-full flex-col">
             <div className="flex items-start justify-between">
-              <div>
-                <BentoLabel icon={<Flame className="h-3.5 w-3.5" />} color="var(--color-energy)">Calories</BentoLabel>
-                <h3 className="mt-1 text-base font-medium">Daily energy</h3>
-              </div>
-              <Link to="/nutrition" className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary transition-colors hover:bg-foreground hover:text-background">
-                <ArrowUpRight className="h-4 w-4" />
-              </Link>
+              <BentoLabel icon={<Flame className="h-3 w-3" />} color="var(--color-energy)">Calories</BentoLabel>
+              <ArrowChip />
             </div>
-
-            <div className="mt-6 flex flex-1 items-center justify-center">
-              <ProgressRing value={calories} max={calGoal} size={220} stroke={16} color="var(--color-energy)">
-                <div className="font-mono text-4xl font-semibold tabular-nums">{calories}</div>
-                <div className="mt-1 text-xs text-muted-foreground">of {calGoal} kcal</div>
-                <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium">
+            <div className="mt-3 flex flex-1 items-center justify-center py-2">
+              <ProgressRing value={calories} max={calGoal} size={200} stroke={14} color="var(--color-energy)">
+                <div className="font-mono text-[2.6rem] font-semibold leading-none tabular-nums">{calories}</div>
+                <div className="mt-1.5 text-[11px] text-muted-foreground">of {calGoal} kcal</div>
+                <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-medium">
                   {Math.max(0, calGoal - calories)} kcal left
                 </div>
               </ProgressRing>
             </div>
-          </div>
-        </BentoCard>
+          </Link>
+        </BentoTile>
 
-        {/* Protein ring */}
-        <BentoCard className="col-span-1 lg:col-span-4">
-          <BentoLabel icon={<Beef className="h-3.5 w-3.5" />} color="var(--color-vital)">Protein</BentoLabel>
-          <div className="mt-3 flex items-center gap-4">
-            <ProgressRing value={protein} max={proGoal} size={88} stroke={9} color="var(--color-vital)">
-              <div className="font-mono text-sm font-semibold tabular-nums">{Math.round(protein)}g</div>
-            </ProgressRing>
-            <div className="min-w-0">
-              <div className="font-mono text-2xl font-semibold tabular-nums">{Math.round(protein)}<span className="text-base text-muted-foreground">/{proGoal}g</span></div>
-              <div className="mt-1 text-xs text-muted-foreground">muscle fuel</div>
+        {/* Protein – TALL TILE */}
+        <BentoTile className="col-span-3 row-span-2 lg:col-span-3">
+          <Link to="/nutrition" className="flex h-full flex-col">
+            <BentoLabel icon={<Beef className="h-3 w-3" />} color="var(--color-vital)">Protein</BentoLabel>
+            <div className="flex flex-1 items-center justify-center py-2">
+              <ProgressRing value={protein} max={proGoal} size={110} stroke={11} color="var(--color-vital)">
+                <div className="font-mono text-lg font-semibold leading-none tabular-nums">{Math.round(protein)}</div>
+                <div className="text-[9px] text-muted-foreground">/ {proGoal}g</div>
+              </ProgressRing>
             </div>
-          </div>
-        </BentoCard>
+            <div className="text-[10px] text-muted-foreground">muscle fuel</div>
+          </Link>
+        </BentoTile>
 
         {/* Streak */}
-        <BentoCard className="col-span-1 lg:col-span-3">
-          <BentoLabel icon={<Sparkles className="h-3.5 w-3.5" />} color="var(--color-primary)">Streak</BentoLabel>
-          <div className="mt-2 font-mono text-4xl font-semibold tabular-nums">{streak}</div>
-          <div className="text-xs text-muted-foreground">day{streak === 1 ? "" : "s"} active</div>
-        </BentoCard>
+        <BentoTile className="col-span-3 lg:col-span-2">
+          <BentoLabel icon={<Sparkles className="h-3 w-3" />} color="var(--color-primary)">Streak</BentoLabel>
+          <div className="mt-1 font-mono text-3xl font-semibold tabular-nums sm:text-4xl">{streak}</div>
+          <div className="text-[10px] text-muted-foreground">day{streak === 1 ? "" : "s"} on fire</div>
+        </BentoTile>
 
         {/* Workouts today */}
-        <BentoCard className="col-span-1 lg:col-span-4 group cursor-default">
+        <BentoTile className="col-span-3 lg:col-span-2 group">
           <Link to="/workouts" className="flex h-full flex-col">
             <div className="flex items-start justify-between">
-              <BentoLabel icon={<Dumbbell className="h-3.5 w-3.5" />} color="var(--color-strength)">Training</BentoLabel>
-              <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              <BentoLabel icon={<Dumbbell className="h-3 w-3" />} color="var(--color-strength)">Train</BentoLabel>
+              <ArrowChip />
             </div>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="font-mono text-4xl font-semibold tabular-nums">{exerciseCount}</span>
-              <span className="text-sm text-muted-foreground">exercise{exerciseCount === 1 ? "" : "s"}</span>
-            </div>
-            <div className="mt-auto pt-3 text-xs text-muted-foreground">
-              {todayVolume > 0 ? `${todayVolume.toLocaleString()} kg volume` : "Log your first set →"}
+            <div className="mt-1 font-mono text-3xl font-semibold tabular-nums sm:text-4xl">{exerciseCount}</div>
+            <div className="text-[10px] text-muted-foreground">
+              {todayVolume > 0 ? `${(todayVolume / 1000).toFixed(1)}k kg vol` : "tap to log"}
             </div>
           </Link>
-        </BentoCard>
+        </BentoTile>
 
-        {/* Quick actions */}
-        <BentoCard className="col-span-1 lg:col-span-3 bg-foreground text-background">
-          <BentoLabel icon={<TrendingUp className="h-3.5 w-3.5" />} color="oklch(0.78 0.14 165)" muted>Progress</BentoLabel>
-          <p className="mt-3 text-sm leading-snug opacity-80">View your last 14 days, body weight & macros.</p>
-          <Link to="/progress" className="mt-3 inline-flex items-center gap-1 text-xs font-medium underline-offset-4 hover:underline">
-            Open report <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
-        </BentoCard>
-
-        {/* Consistency strip */}
-        <BentoCard className="col-span-2 lg:col-span-12">
-          <div className="mb-3 flex items-baseline justify-between">
-            <BentoLabel>Last 28 days</BentoLabel>
-            <span className="text-xs text-muted-foreground">{active.size} active</span>
+        {/* Quick add — wide accent tile */}
+        <BentoTile className="col-span-6 lg:col-span-7" tone="dark">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <BentoLabel icon={<TrendingUp className="h-3 w-3" />} color="oklch(0.78 0.14 165)" muted>Progress</BentoLabel>
+              <p className="mt-1 text-sm font-medium leading-snug opacity-90">Track weight, macros & volume over time.</p>
+            </div>
+            <Link to="/progress" className="shrink-0 rounded-full bg-white/15 px-3 py-2 text-xs font-medium backdrop-blur transition-colors hover:bg-white/25">
+              Open
+            </Link>
           </div>
-          <div className="grid gap-1.5" style={{ gridTemplateColumns: "repeat(28, minmax(0, 1fr))" }}>
+        </BentoTile>
+
+        {/* Quick action chips */}
+        <Link
+          to="/workouts"
+          className="col-span-3 flex items-center gap-2 rounded-2xl glass-tint specular px-3 py-3 text-sm font-medium pressable lg:col-span-3"
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate">Log workout</span>
+            <span className="block text-[10px] font-normal text-muted-foreground">add exercise</span>
+          </span>
+        </Link>
+        <Link
+          to="/nutrition"
+          className="col-span-3 flex items-center gap-2 rounded-2xl glass-tint specular px-3 py-3 text-sm font-medium pressable lg:col-span-3"
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-vital text-accent-foreground">
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate">Log meal</span>
+            <span className="block text-[10px] font-normal text-muted-foreground">add food</span>
+          </span>
+        </Link>
+
+        {/* Consistency strip — full width */}
+        <BentoTile className="col-span-6 lg:col-span-12">
+          <div className="mb-2.5 flex items-baseline justify-between">
+            <BentoLabel>Last 28 days</BentoLabel>
+            <span className="font-mono text-[10px] text-muted-foreground">{active.size}/28 active</span>
+          </div>
+          <div className="grid gap-1" style={{ gridTemplateColumns: "repeat(28, minmax(0, 1fr))" }}>
             {days.map((d, i) => {
               const k = format(d, "yyyy-MM-dd");
               const on = active.has(k);
@@ -197,30 +215,47 @@ function Today() {
                   key={k}
                   title={format(d, "MMM d")}
                   className={cn(
-                    "aspect-square rounded-md transition-all",
-                    on ? "bg-gradient-primary shadow-soft" : "bg-secondary",
-                    isToday && "ring-2 ring-foreground ring-offset-2 ring-offset-background",
+                    "aspect-square rounded-[5px] transition-all",
+                    on ? "bg-gradient-primary shadow-soft" : "bg-foreground/[0.06]",
+                    isToday && "ring-2 ring-foreground ring-offset-1 ring-offset-transparent",
                   )}
                 />
               );
             })}
           </div>
-        </BentoCard>
+        </BentoTile>
       </section>
     </div>
   );
 }
 
-function BentoCard({ className, children }: { className?: string; children: React.ReactNode }) {
+function BentoTile({
+  className,
+  children,
+  tone = "glass",
+}: {
+  className?: string;
+  children: React.ReactNode;
+  tone?: "glass" | "dark";
+}) {
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-3xl border border-border/60 bg-card p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-card sm:p-6",
+        "specular relative overflow-hidden rounded-3xl p-4 transition-all hover:-translate-y-0.5 sm:p-5",
+        tone === "glass" ? "glass" : "bg-foreground text-background border border-foreground/30 shadow-card",
         className,
       )}
     >
       {children}
     </div>
+  );
+}
+
+function ArrowChip() {
+  return (
+    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/60 text-foreground transition-colors group-hover:bg-foreground group-hover:text-background">
+      <ArrowUpRight className="h-3.5 w-3.5" />
+    </span>
   );
 }
 
@@ -236,11 +271,11 @@ function BentoLabel({
   muted?: boolean;
 }) {
   return (
-    <div className={cn("inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em]", muted ? "text-background/60" : "text-muted-foreground")}>
+    <div className={cn("inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.18em]", muted ? "text-background/70" : "text-muted-foreground")}>
       {icon && (
         <span
-          className="flex h-5 w-5 items-center justify-center rounded-md"
-          style={color ? { background: `color-mix(in oklab, ${color} 18%, transparent)`, color } : undefined}
+          className="flex h-4 w-4 items-center justify-center rounded-[5px]"
+          style={color ? { background: `color-mix(in oklab, ${color} 22%, transparent)`, color } : undefined}
         >
           {icon}
         </span>
