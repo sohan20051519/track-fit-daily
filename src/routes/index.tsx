@@ -76,7 +76,7 @@ function Today() {
   const days = eachDayOfInterval({ start: subDays(new Date(), 27), end: new Date() });
 
   return (
-    <div className="space-y-3 stagger sm:space-y-4">
+    <div className="space-y-3 animate-fade-in-up sm:space-y-4">
       {/* Hero — liquid glass */}
       <section className="relative overflow-hidden rounded-[28px] glass specular p-5 sm:p-7">
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
