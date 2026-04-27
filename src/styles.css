@@ -199,7 +199,7 @@
 }
 
 @layer utilities {
-  .animate-fade-in-up { animation: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .animate-fade-in-up { animation: fade-in-up 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
   .animate-scale-in { animation: scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
   .animate-float { animation: float 4s ease-in-out infinite; }
   .animate-drift { animation: drift 18s ease-in-out infinite; }
