@@ -106,35 +106,35 @@ function Today() {
       {/* Bento — true asymmetric grid that stays bento on mobile */}
       <section className="grid auto-rows-[minmax(0,auto)] grid-cols-6 gap-2.5 sm:gap-3 lg:grid-cols-12">
         {/* Calories ring – HERO TILE */}
-        <BentoTile className="col-span-6 row-span-2 lg:col-span-5">
+        <BentoTile className="col-span-4 row-span-2 lg:col-span-5">
           <Link to="/nutrition" className="flex h-full flex-col">
             <div className="flex items-start justify-between">
               <BentoLabel icon={<Flame className="h-3 w-3" />} color="var(--color-energy)">Calories</BentoLabel>
               <ArrowChip />
             </div>
-            <div className="mt-3 flex flex-1 items-center justify-center py-2">
-              <ProgressRing value={calories} max={calGoal} size={200} stroke={14} color="var(--color-energy)">
-                <div className="font-mono text-[2.6rem] font-semibold leading-none tabular-nums">{calories}</div>
-                <div className="mt-1.5 text-[11px] text-muted-foreground">of {calGoal} kcal</div>
-                <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-medium">
-                  {Math.max(0, calGoal - calories)} kcal left
-                </div>
+            <div className="mt-2 flex flex-1 items-center justify-center">
+              <ProgressRing value={calories} max={calGoal} size={140} stroke={10} color="var(--color-energy)">
+                <div className="font-mono text-2xl font-semibold leading-none tabular-nums sm:text-3xl">{calories}</div>
+                <div className="mt-1 text-[10px] text-muted-foreground">of {calGoal}</div>
               </ProgressRing>
+            </div>
+            <div className="mt-1 text-center text-[10px] text-muted-foreground">
+              {Math.max(0, calGoal - calories)} kcal left
             </div>
           </Link>
         </BentoTile>
 
         {/* Protein – TALL TILE */}
-        <BentoTile className="col-span-3 row-span-2 lg:col-span-3">
+        <BentoTile className="col-span-2 row-span-2 lg:col-span-3">
           <Link to="/nutrition" className="flex h-full flex-col">
             <BentoLabel icon={<Beef className="h-3 w-3" />} color="var(--color-vital)">Protein</BentoLabel>
             <div className="flex flex-1 items-center justify-center py-2">
-              <ProgressRing value={protein} max={proGoal} size={110} stroke={11} color="var(--color-vital)">
-                <div className="font-mono text-lg font-semibold leading-none tabular-nums">{Math.round(protein)}</div>
-                <div className="text-[9px] text-muted-foreground">/ {proGoal}g</div>
+              <ProgressRing value={protein} max={proGoal} size={88} stroke={9} color="var(--color-vital)">
+                <div className="font-mono text-base font-semibold leading-none tabular-nums">{Math.round(protein)}</div>
+                <div className="text-[9px] text-muted-foreground">/{proGoal}g</div>
               </ProgressRing>
             </div>
-            <div className="text-[10px] text-muted-foreground">muscle fuel</div>
+            <div className="text-center text-[10px] text-muted-foreground">muscle fuel</div>
           </Link>
         </BentoTile>
 
