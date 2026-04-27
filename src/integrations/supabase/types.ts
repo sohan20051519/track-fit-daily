@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      meal_plan_items: {
+        Row: {
+          calories: number
+          created_at: string
+          grams: number | null
+          id: string
+          meal_type: string
+          name: string
+          position: number
+          protein_g: number
+          user_id: string
+          weekday: number
+        }
+        Insert: {
+          calories?: number
+          created_at?: string
+          grams?: number | null
+          id?: string
+          meal_type?: string
+          name: string
+          position?: number
+          protein_g?: number
+          user_id: string
+          weekday: number
+        }
+        Update: {
+          calories?: number
+          created_at?: string
+          grams?: number | null
+          id?: string
+          meal_type?: string
+          name?: string
+          position?: number
+          protein_g?: number
+          user_id?: string
+          weekday?: number
+        }
+        Relationships: []
+      }
       meals: {
         Row: {
           calories: number
@@ -63,7 +102,9 @@ export type Database = {
           height_cm: number | null
           id: string
           onboarded: boolean
+          preferred_weigh_day: number
           updated_at: string
+          weight_track_frequency: string
         }
         Insert: {
           activity_level?: string | null
@@ -77,7 +118,9 @@ export type Database = {
           height_cm?: number | null
           id: string
           onboarded?: boolean
+          preferred_weigh_day?: number
           updated_at?: string
+          weight_track_frequency?: string
         }
         Update: {
           activity_level?: string | null
@@ -91,7 +134,9 @@ export type Database = {
           height_cm?: number | null
           id?: string
           onboarded?: boolean
+          preferred_weigh_day?: number
           updated_at?: string
+          weight_track_frequency?: string
         }
         Relationships: []
       }
@@ -116,6 +161,45 @@ export type Database = {
           id?: string
           user_id?: string
           weight_kg?: number
+        }
+        Relationships: []
+      }
+      workout_plan_items: {
+        Row: {
+          body_part: string
+          created_at: string
+          exercise_name: string
+          id: string
+          position: number
+          target_reps: number
+          target_sets: number
+          target_weight_kg: number
+          user_id: string
+          weekday: number
+        }
+        Insert: {
+          body_part: string
+          created_at?: string
+          exercise_name: string
+          id?: string
+          position?: number
+          target_reps?: number
+          target_sets?: number
+          target_weight_kg?: number
+          user_id: string
+          weekday: number
+        }
+        Update: {
+          body_part?: string
+          created_at?: string
+          exercise_name?: string
+          id?: string
+          position?: number
+          target_reps?: number
+          target_sets?: number
+          target_weight_kg?: number
+          user_id?: string
+          weekday?: number
         }
         Relationships: []
       }
