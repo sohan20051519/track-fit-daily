@@ -107,7 +107,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Mobile bottom nav — Apple-style liquid glass */}
       <nav className="fixed inset-x-0 bottom-0 z-40 lg:hidden">
         <div className="mx-auto max-w-md px-3 pb-3 safe-pb">
-          <div className="glass-strong specular flex items-center justify-around rounded-[28px] p-1.5">
+          <div className="glass-strong flex items-center justify-around rounded-[28px] p-1.5">
             {NAV.map((n) => {
               const active = n.to === "/" ? path === "/" : path.startsWith(n.to);
               return (
@@ -115,15 +115,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   key={n.to}
                   to={n.to}
                   className={cn(
-                    "pressable relative flex flex-1 flex-col items-center gap-0.5 rounded-2xl px-2 py-2 text-[10px] font-medium transition-colors",
-                    active ? "text-background" : "text-muted-foreground",
+                    "pressable relative flex flex-1 flex-col items-center gap-0.5 overflow-hidden rounded-2xl px-2 py-2 text-[10px] font-medium transition-colors",
+                    active ? "bg-foreground text-background shadow-soft" : "text-muted-foreground",
                   )}
                 >
-                  {active && (
-                    <span className="absolute inset-0 -z-10 rounded-2xl bg-foreground shadow-soft" />
-                  )}
-                  <n.icon className="h-[18px] w-[18px]" strokeWidth={active ? 2.5 : 2} />
-                  <span>{n.label}</span>
+                  <n.icon className="relative h-[18px] w-[18px]" strokeWidth={active ? 2.5 : 2} />
+                  <span className="relative">{n.label}</span>
                 </Link>
               );
             })}

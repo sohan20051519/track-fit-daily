@@ -199,7 +199,7 @@
 }
 
 @layer utilities {
-  .animate-fade-in-up { animation: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .animate-fade-in-up { animation: fade-in-up 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
   .animate-scale-in { animation: scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
   .animate-float { animation: float 4s ease-in-out infinite; }
   .animate-drift { animation: drift 18s ease-in-out infinite; }
@@ -236,15 +236,15 @@
   .shadow-glow { box-shadow: var(--shadow-glow); }
   .shadow-glass { box-shadow: var(--shadow-glass); }
 
-  .stagger > * { animation: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
-  .stagger > *:nth-child(1) { animation-delay: 0.04s; }
-  .stagger > *:nth-child(2) { animation-delay: 0.10s; }
-  .stagger > *:nth-child(3) { animation-delay: 0.16s; }
-  .stagger > *:nth-child(4) { animation-delay: 0.22s; }
-  .stagger > *:nth-child(5) { animation-delay: 0.28s; }
-  .stagger > *:nth-child(6) { animation-delay: 0.34s; }
-  .stagger > *:nth-child(7) { animation-delay: 0.40s; }
-  .stagger > *:nth-child(8) { animation-delay: 0.46s; }
+  .stagger > * { animation: fade-in-up 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .stagger > *:nth-child(1) { animation-delay: 0.01s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.04s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.07s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.10s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.13s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.16s; }
+  .stagger > *:nth-child(7) { animation-delay: 0.19s; }
+  .stagger > *:nth-child(8) { animation-delay: 0.22s; }
 
   .pressable { transition: transform 0.15s ease, box-shadow 0.2s ease; }
   .pressable:active { transform: scale(0.97); }

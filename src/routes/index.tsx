@@ -76,28 +76,27 @@ function Today() {
   const days = eachDayOfInterval({ start: subDays(new Date(), 27), end: new Date() });
 
   return (
-    <div className="space-y-3 stagger sm:space-y-4">
+    <div className="space-y-3 animate-fade-in-up sm:space-y-4">
       {/* Hero — liquid glass */}
-      <section className="relative overflow-hidden rounded-[28px] glass specular p-5 sm:p-7">
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <section className="relative overflow-hidden rounded-[24px] glass p-4 sm:p-6">
+        <div className="relative flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{format(new Date(), "EEEE · MMMM d")}</p>
-            <h1 className="mt-1.5 font-serif-display text-[2.4rem] leading-[1] sm:text-5xl">
-              {greeting},<br />
-              <span className="italic opacity-90">{name}.</span>
+            <h1 className="mt-1 font-serif-display text-[2rem] leading-[1.05] sm:text-4xl">
+              {greeting}, <span className="italic opacity-90">{name}.</span>
             </h1>
-            <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/50 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
+            <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium">
               <Sparkles className="h-3 w-3 text-primary" />
               {streak > 0 ? `${streak}-day streak` : "Start your streak"}
             </div>
           </div>
 
           {todayWeight != null && (
-            <div className="flex items-center gap-3 rounded-2xl glass-tint px-3.5 py-2.5 sm:flex-col sm:items-end">
+            <div className="flex items-center gap-2 rounded-2xl glass-tint px-3 py-2 sm:flex-col sm:items-end">
               <Scale className="h-4 w-4 text-focus" />
               <div className="sm:text-right">
                 <div className="text-[9px] uppercase tracking-widest text-muted-foreground">Today</div>
-                <div className="font-mono text-lg font-semibold">{todayWeight} kg</div>
+                <div className="font-mono text-base font-semibold">{todayWeight} kg</div>
               </div>
             </div>
           )}
@@ -107,35 +106,35 @@ function Today() {
       {/* Bento — true asymmetric grid that stays bento on mobile */}
       <section className="grid auto-rows-[minmax(0,auto)] grid-cols-6 gap-2.5 sm:gap-3 lg:grid-cols-12">
         {/* Calories ring – HERO TILE */}
-        <BentoTile className="col-span-6 row-span-2 lg:col-span-5">
+        <BentoTile className="col-span-4 row-span-2 lg:col-span-5">
           <Link to="/nutrition" className="flex h-full flex-col">
             <div className="flex items-start justify-between">
               <BentoLabel icon={<Flame className="h-3 w-3" />} color="var(--color-energy)">Calories</BentoLabel>
               <ArrowChip />
             </div>
-            <div className="mt-3 flex flex-1 items-center justify-center py-2">
-              <ProgressRing value={calories} max={calGoal} size={200} stroke={14} color="var(--color-energy)">
-                <div className="font-mono text-[2.6rem] font-semibold leading-none tabular-nums">{calories}</div>
-                <div className="mt-1.5 text-[11px] text-muted-foreground">of {calGoal} kcal</div>
-                <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-medium">
-                  {Math.max(0, calGoal - calories)} kcal left
-                </div>
+            <div className="mt-2 flex flex-1 items-center justify-center">
+              <ProgressRing value={calories} max={calGoal} size={140} stroke={10} color="var(--color-energy)">
+                <div className="font-mono text-2xl font-semibold leading-none tabular-nums sm:text-3xl">{calories}</div>
+                <div className="mt-1 text-[10px] text-muted-foreground">of {calGoal}</div>
               </ProgressRing>
+            </div>
+            <div className="mt-1 text-center text-[10px] text-muted-foreground">
+              {Math.max(0, calGoal - calories)} kcal left
             </div>
           </Link>
         </BentoTile>
 
         {/* Protein – TALL TILE */}
-        <BentoTile className="col-span-3 row-span-2 lg:col-span-3">
+        <BentoTile className="col-span-2 row-span-2 lg:col-span-3">
           <Link to="/nutrition" className="flex h-full flex-col">
             <BentoLabel icon={<Beef className="h-3 w-3" />} color="var(--color-vital)">Protein</BentoLabel>
             <div className="flex flex-1 items-center justify-center py-2">
-              <ProgressRing value={protein} max={proGoal} size={110} stroke={11} color="var(--color-vital)">
-                <div className="font-mono text-lg font-semibold leading-none tabular-nums">{Math.round(protein)}</div>
-                <div className="text-[9px] text-muted-foreground">/ {proGoal}g</div>
+              <ProgressRing value={protein} max={proGoal} size={88} stroke={9} color="var(--color-vital)">
+                <div className="font-mono text-base font-semibold leading-none tabular-nums">{Math.round(protein)}</div>
+                <div className="text-[9px] text-muted-foreground">/{proGoal}g</div>
               </ProgressRing>
             </div>
-            <div className="text-[10px] text-muted-foreground">muscle fuel</div>
+            <div className="text-center text-[10px] text-muted-foreground">muscle fuel</div>
           </Link>
         </BentoTile>
 
