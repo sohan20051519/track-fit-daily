@@ -12,6 +12,8 @@ import { COMMON_FOODS, MEAL_TYPES, scaleMacros, type FoodPreset } from "@/lib/co
 import { Plus, Trash2, Utensils, Coffee, Sun, Moon, Cookie, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { WeeklyMealPlan } from "@/components/WeeklyMealPlan";
 
 export const Route = createFileRoute("/nutrition")({
   head: () => ({ meta: [{ title: "Nutrition — Pulse" }] }),
