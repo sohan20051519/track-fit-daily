@@ -12,6 +12,8 @@ import { COMMON_FOODS, MEAL_TYPES, scaleMacros, type FoodPreset } from "@/lib/co
 import { Plus, Trash2, Utensils, Coffee, Sun, Moon, Cookie, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { WeeklyMealPlan } from "@/components/WeeklyMealPlan";
 
 export const Route = createFileRoute("/nutrition")({
   head: () => ({ meta: [{ title: "Nutrition — Pulse" }] }),
@@ -119,172 +121,186 @@ function NutritionPage() {
         </div>
       </section>
 
-      {/* Logger */}
-      <div className="rounded-3xl glass specular p-4 sm:p-5">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-vital text-accent-foreground shadow-soft">
-              <Plus className="h-4 w-4" strokeWidth={2.5} />
-            </div>
-            <h2 className="text-base font-semibold tracking-tight">Add a meal</h2>
-          </div>
-          <div className="inline-flex rounded-full bg-white/50 p-1 text-[11px] font-medium backdrop-blur">
-            {(["preset", "custom"] as const).map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                className={cn(
-                  "rounded-full px-3 py-1 transition-all",
-                  mode === m ? "bg-foreground text-background shadow-soft" : "text-muted-foreground",
-                )}
-              >
-                {m === "preset" ? "Common" : "Custom"}
-              </button>
-            ))}
-          </div>
-        </div>
+      <Tabs defaultValue="today">
+        <TabsList className="grid w-full grid-cols-2 rounded-full bg-muted p-1">
+          <TabsTrigger value="today" className="rounded-full">Today</TabsTrigger>
+          <TabsTrigger value="plan" className="rounded-full">Weekly diet</TabsTrigger>
+        </TabsList>
 
-        {/* Meal pills */}
-        <div className="space-y-1.5">
-          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Meal</Label>
-          <div className="grid grid-cols-4 gap-1.5">
-            {MEAL_TYPES.map((m) => (
-              <button
-                key={m}
-                onClick={() => setMealType(m)}
-                className={cn(
-                  "pressable flex flex-col items-center gap-1 rounded-2xl border px-1 py-2.5 text-[11px] font-medium capitalize transition-all",
-                  mealType === m
-                    ? "border-foreground bg-foreground text-background shadow-soft"
-                    : "border-white/50 bg-white/40 text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {MEAL_ICONS[m]}
-                {m}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {mode === "preset" ? (
-          <div className="mt-4 space-y-3">
-            <div className="space-y-1.5">
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Food</Label>
-              <Select value={presetName} onValueChange={setPresetName}>
-                <SelectTrigger className="h-12 rounded-2xl border-white/50 bg-white/40 backdrop-blur"><SelectValue /></SelectTrigger>
-                <SelectContent className="max-h-72">
-                  {COMMON_FOODS.map((f) => <SelectItem key={f.name} value={f.name}>{f.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Portion</Label>
-              <div className="rounded-2xl glass-tint p-2.5">
-                <div className="flex items-center justify-between gap-2">
-                  <Button type="button" size="icon" variant="outline" className="h-10 w-10 shrink-0 rounded-full border-white/60 bg-white/60" onClick={() => stepGrams(-10)}>
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <div className="flex flex-1 items-baseline justify-center gap-1">
-                    <Input
-                      type="number"
-                      inputMode="decimal"
-                      value={grams}
-                      onChange={(e) => setGrams(e.target.value)}
-                      className="no-spin h-12 max-w-[6.5rem] rounded-xl border-transparent bg-white/70 text-center font-mono text-2xl font-semibold"
-                    />
-                    <span className="text-sm font-medium text-muted-foreground">g</span>
-                  </div>
-                  <Button type="button" size="icon" className="h-10 w-10 shrink-0 rounded-full" onClick={() => stepGrams(10)}>
-                    <Plus className="h-4 w-4" />
-                  </Button>
+        <TabsContent value="today" className="mt-4 space-y-4">
+          {/* Logger */}
+          <div className="rounded-3xl glass p-4 sm:p-5">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-vital text-accent-foreground shadow-soft">
+                  <Plus className="h-4 w-4" strokeWidth={2.5} />
                 </div>
-                {preset?.perUnit && (
-                  <div className="mt-1.5 text-center text-[11px] text-muted-foreground">
-                    ≈ {((parseFloat(grams) || 0) / preset.perUnit.gramsPerUnit).toFixed(1)} {preset.perUnit.unitLabel}{((parseFloat(grams) || 0) / preset.perUnit.gramsPerUnit) === 1 ? "" : "s"}
-                  </div>
-                )}
+                <h2 className="text-base font-semibold tracking-tight">Add a meal</h2>
+              </div>
+              <div className="inline-flex rounded-full bg-muted p-1 text-[11px] font-medium">
+                {(["preset", "custom"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMode(m)}
+                    className={cn(
+                      "rounded-full px-3 py-1 transition-all",
+                      mode === m ? "bg-foreground text-background shadow-soft" : "text-muted-foreground",
+                    )}
+                  >
+                    {m === "preset" ? "Common" : "Custom"}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <MacroPreview label="Calories" value={`${scaled.calories}`} unit="kcal" color="var(--color-energy)" />
-              <MacroPreview label="Protein" value={`${scaled.protein_g}`} unit="g" color="var(--color-vital)" />
-            </div>
-          </div>
-        ) : (
-          <div className="mt-4 space-y-2.5">
             <div className="space-y-1.5">
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Food name</Label>
-              <Input value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder="e.g. Chicken & rice bowl" className="h-12 rounded-2xl border-white/50 bg-white/40 backdrop-blur" />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1.5">
-                <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Calories</Label>
-                <Input type="number" inputMode="numeric" value={customCal} onChange={(e) => setCustomCal(e.target.value)} placeholder="0" className="no-spin h-12 rounded-2xl border-white/50 bg-white/40 font-mono backdrop-blur" />
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Meal</Label>
+              <div className="grid grid-cols-4 gap-1.5">
+                {MEAL_TYPES.map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMealType(m)}
+                    className={cn(
+                      "pressable flex flex-col items-center gap-1 rounded-2xl border px-1 py-2.5 text-[11px] font-medium capitalize transition-all",
+                      mealType === m
+                        ? "border-foreground bg-foreground text-background shadow-soft"
+                        : "border-border bg-card text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {MEAL_ICONS[m]}
+                    {m}
+                  </button>
+                ))}
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Protein (g)</Label>
-                <Input type="number" inputMode="decimal" value={customPro} onChange={(e) => setCustomPro(e.target.value)} placeholder="0" className="no-spin h-12 rounded-2xl border-white/50 bg-white/40 font-mono backdrop-blur" />
-              </div>
             </div>
-          </div>
-        )}
 
-        <Button onClick={save} disabled={busy || (mode === "custom" && !customName)} className="mt-4 h-12 w-full rounded-2xl bg-foreground text-background hover:bg-foreground/90 shadow-card">
-          <Plus className="mr-1 h-4 w-4" /> Add meal
-        </Button>
-      </div>
+            {mode === "preset" ? (
+              <div className="mt-4 space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Food</Label>
+                  <Select value={presetName} onValueChange={setPresetName}>
+                    <SelectTrigger className="h-12 rounded-2xl"><SelectValue /></SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {COMMON_FOODS.map((f) => <SelectItem key={f.name} value={f.name}>{f.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-      {/* Today's meals */}
-      <div>
-        <h2 className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Today's meals</h2>
-        {items.length === 0 ? (
-          <div className="rounded-3xl glass-tint specular p-8 text-center">
-            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-white/60 text-muted-foreground">
-              <Utensils className="h-5 w-5" />
-            </div>
-            <p className="mt-3 text-sm text-muted-foreground">Nothing logged yet.</p>
-          </div>
-        ) : (
-          <div className="space-y-4 stagger">
-            {groups.map((g) => {
-              const cal = g.items.reduce((s, x) => s + x.calories, 0);
-              const pro = g.items.reduce((s, x) => s + x.protein_g, 0);
-              return (
-                <div key={g.type}>
-                  <div className="mb-1.5 flex items-center justify-between px-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-white/60 text-muted-foreground">
-                        {MEAL_ICONS[g.type]}
-                      </span>
-                      <span className="text-xs font-semibold capitalize">{g.type}</span>
-                    </div>
-                    <span className="font-mono text-[10px] text-muted-foreground">{cal} kcal · {Math.round(pro)}g</span>
-                  </div>
-                  <div className="space-y-1">
-                    {g.items.map((m) => (
-                      <div key={m.id} className="flex items-center gap-2.5 rounded-2xl glass specular p-2.5">
-                        <div className="min-w-0 flex-1">
-                          <div className="truncate text-sm font-medium">{m.name}</div>
-                          {m.grams && <div className="font-mono text-[10px] text-muted-foreground">{m.grams}g</div>}
-                        </div>
-                        <div className="text-right">
-                          <div className="font-mono text-sm font-semibold tabular-nums">{m.calories}<span className="text-[9px] text-muted-foreground"> kcal</span></div>
-                          <div className="font-mono text-[10px] text-muted-foreground">{m.protein_g}g P</div>
-                        </div>
-                        <button onClick={() => del(m.id)} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Portion</Label>
+                  <div className="rounded-2xl glass-tint p-2.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <Button type="button" size="icon" variant="outline" className="h-10 w-10 shrink-0 rounded-full" onClick={() => stepGrams(-10)}>
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <div className="flex flex-1 items-baseline justify-center gap-1">
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          value={grams}
+                          onChange={(e) => setGrams(e.target.value)}
+                          className="no-spin h-12 max-w-[6.5rem] rounded-xl border-transparent bg-card text-center font-mono text-2xl font-semibold"
+                        />
+                        <span className="text-sm font-medium text-muted-foreground">g</span>
                       </div>
-                    ))}
+                      <Button type="button" size="icon" className="h-10 w-10 shrink-0 rounded-full" onClick={() => stepGrams(10)}>
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {preset?.perUnit && (
+                      <div className="mt-1.5 text-center text-[11px] text-muted-foreground">
+                        ≈ {((parseFloat(grams) || 0) / preset.perUnit.gramsPerUnit).toFixed(1)} {preset.perUnit.unitLabel}{((parseFloat(grams) || 0) / preset.perUnit.gramsPerUnit) === 1 ? "" : "s"}
+                      </div>
+                    )}
                   </div>
                 </div>
-              );
-            })}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <MacroPreview label="Calories" value={`${scaled.calories}`} unit="kcal" color="var(--color-energy)" />
+                  <MacroPreview label="Protein" value={`${scaled.protein_g}`} unit="g" color="var(--color-vital)" />
+                </div>
+              </div>
+            ) : (
+              <div className="mt-4 space-y-2.5">
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Food name</Label>
+                  <Input value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder="e.g. Chicken & rice bowl" className="h-12 rounded-2xl" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Calories</Label>
+                    <Input type="number" inputMode="numeric" value={customCal} onChange={(e) => setCustomCal(e.target.value)} placeholder="0" className="no-spin h-12 rounded-2xl font-mono" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Protein (g)</Label>
+                    <Input type="number" inputMode="decimal" value={customPro} onChange={(e) => setCustomPro(e.target.value)} placeholder="0" className="no-spin h-12 rounded-2xl font-mono" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <Button onClick={save} disabled={busy || (mode === "custom" && !customName)} className="mt-4 h-12 w-full rounded-2xl bg-foreground text-background hover:bg-foreground/90 shadow-card">
+              <Plus className="mr-1 h-4 w-4" /> Add meal
+            </Button>
           </div>
-        )}
-      </div>
+
+          {/* Today's meals */}
+          <div>
+            <h2 className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Today's meals</h2>
+            {items.length === 0 ? (
+              <div className="rounded-3xl glass-tint p-8 text-center">
+                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-card text-muted-foreground">
+                  <Utensils className="h-5 w-5" />
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">Nothing logged yet.</p>
+              </div>
+            ) : (
+              <div className="space-y-4 stagger">
+                {groups.map((g) => {
+                  const cal = g.items.reduce((s, x) => s + x.calories, 0);
+                  const pro = g.items.reduce((s, x) => s + x.protein_g, 0);
+                  return (
+                    <div key={g.type}>
+                      <div className="mb-1.5 flex items-center justify-between px-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="flex h-5 w-5 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                            {MEAL_ICONS[g.type]}
+                          </span>
+                          <span className="text-xs font-semibold capitalize">{g.type}</span>
+                        </div>
+                        <span className="font-mono text-[10px] text-muted-foreground">{cal} kcal · {Math.round(pro)}g</span>
+                      </div>
+                      <div className="space-y-1">
+                        {g.items.map((m) => (
+                          <div key={m.id} className="flex items-center gap-2.5 rounded-2xl glass p-2.5">
+                            <div className="min-w-0 flex-1">
+                              <div className="truncate text-sm font-medium">{m.name}</div>
+                              {m.grams && <div className="font-mono text-[10px] text-muted-foreground">{m.grams}g</div>}
+                            </div>
+                            <div className="text-right">
+                              <div className="font-mono text-sm font-semibold tabular-nums">{m.calories}<span className="text-[9px] text-muted-foreground"> kcal</span></div>
+                              <div className="font-mono text-[10px] text-muted-foreground">{m.protein_g}g P</div>
+                            </div>
+                            <button onClick={() => del(m.id)} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="plan" className="mt-4">
+          <div className="rounded-3xl glass p-4 sm:p-5">
+            <WeeklyMealPlan onLogged={load} />
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

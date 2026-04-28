@@ -14,6 +14,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   defaultWeight?: number;
+  frequency?: "daily" | "weekly";
   profile: {
     gender: string | null;
     birth_date: string | null;
@@ -23,7 +24,7 @@ interface Props {
   };
 }
 
-export function WeightPromptDialog({ open, onClose, defaultWeight, profile }: Props) {
+export function WeightPromptDialog({ open, onClose, defaultWeight, profile, frequency = "daily" }: Props) {
   const { user } = useAuth();
   const [weight, setWeight] = useState(String(defaultWeight ?? 70));
   const [busy, setBusy] = useState(false);
@@ -66,8 +67,8 @@ export function WeightPromptDialog({ open, onClose, defaultWeight, profile }: Pr
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-focus text-primary-foreground shadow-soft">
             <Scale className="h-5 w-5" />
           </div>
-          <DialogTitle className="font-serif-display text-2xl">Daily check-in</DialogTitle>
-          <DialogDescription>What's your weight today? We'll update your targets automatically.</DialogDescription>
+          <DialogTitle className="font-serif-display text-2xl">{frequency === "weekly" ? "Weekly check-in" : "Daily check-in"}</DialogTitle>
+          <DialogDescription>{frequency === "weekly" ? "What's your weight this week?" : "What's your weight today?"} We'll update your targets automatically.</DialogDescription>
         </DialogHeader>
         <div className="my-2 space-y-2">
           <Label className="text-xs uppercase tracking-wider text-muted-foreground">Weight (kg)</Label>

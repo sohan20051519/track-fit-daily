@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WorkoutsRouteImport } from './routes/workouts'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as NutritionRouteImport } from './routes/nutrition'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -18,6 +19,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const WorkoutsRoute = WorkoutsRouteImport.update({
   id: '/workouts',
   path: '/workouts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProgressRoute = ProgressRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/nutrition': typeof NutritionRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/workouts': typeof WorkoutsRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/nutrition': typeof NutritionRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/workouts': typeof WorkoutsRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,28 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/nutrition': typeof NutritionRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/workouts': typeof WorkoutsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/nutrition' | '/progress' | '/workouts'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/nutrition'
+    | '/progress'
+    | '/settings'
+    | '/workouts'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/nutrition' | '/progress' | '/workouts'
-  id: '__root__' | '/' | '/auth' | '/nutrition' | '/progress' | '/workouts'
+  to: '/' | '/auth' | '/nutrition' | '/progress' | '/settings' | '/workouts'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/nutrition'
+    | '/progress'
+    | '/settings'
+    | '/workouts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +98,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   NutritionRoute: typeof NutritionRoute
   ProgressRoute: typeof ProgressRoute
+  SettingsRoute: typeof SettingsRoute
   WorkoutsRoute: typeof WorkoutsRoute
 }
 
@@ -86,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/workouts'
       fullPath: '/workouts'
       preLoaderRoute: typeof WorkoutsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/progress': {
@@ -124,6 +154,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   NutritionRoute: NutritionRoute,
   ProgressRoute: ProgressRoute,
+  SettingsRoute: SettingsRoute,
   WorkoutsRoute: WorkoutsRoute,
 }
 export const routeTree = rootRouteImport

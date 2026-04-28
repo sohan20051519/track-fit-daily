@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, Dumbbell, Utensils, LineChart, LogOut, Activity } from "lucide-react";
+import { Home, Dumbbell, Utensils, LineChart, LogOut, Activity, Settings } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
               </button>
             </PopoverTrigger>
-            <PopoverContent side="top" align="start" className="w-56 p-1 glass-strong specular border-white/40">
+            <PopoverContent side="top" align="start" className="w-56 p-1 glass-strong border-border">
+              <Button asChild variant="ghost" className="w-full justify-start gap-2">
+                <Link to="/settings"><Settings className="h-4 w-4" /> Settings</Link>
+              </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start gap-2"
@@ -90,12 +93,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
               <span className="text-sm font-semibold tracking-tight">Pulse</span>
             </Link>
-            <button
-              onClick={async () => { await signOut(); navigate({ to: "/auth" }); }}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-vital text-xs font-semibold text-accent-foreground shadow-soft"
+            <Link
+              to="/settings"
+              className="flex h-8 items-center gap-1.5 rounded-full bg-muted px-2.5 text-xs font-medium"
             >
-              {(user?.email ?? "?").slice(0, 1).toUpperCase()}
-            </button>
+              <Settings className="h-3.5 w-3.5" /> Settings
+            </Link>
           </div>
         </header>
 
