@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, Dumbbell, Utensils, LineChart, LogOut, Activity } from "lucide-react";
+import { Home, Dumbbell, Utensils, LineChart, LogOut, Activity, Settings } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
               </button>
             </PopoverTrigger>
-            <PopoverContent side="top" align="start" className="w-56 p-1 glass-strong specular border-white/40">
+            <PopoverContent side="top" align="start" className="w-56 p-1 glass-strong border-border">
+              <Button asChild variant="ghost" className="w-full justify-start gap-2">
+                <Link to="/settings"><Settings className="h-4 w-4" /> Settings</Link>
+              </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start gap-2"
