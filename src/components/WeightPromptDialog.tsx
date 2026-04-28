@@ -14,6 +14,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   defaultWeight?: number;
+  frequency?: "daily" | "weekly";
   profile: {
     gender: string | null;
     birth_date: string | null;
@@ -23,7 +24,7 @@ interface Props {
   };
 }
 
-export function WeightPromptDialog({ open, onClose, defaultWeight, profile }: Props) {
+export function WeightPromptDialog({ open, onClose, defaultWeight, profile, frequency = "daily" }: Props) {
   const { user } = useAuth();
   const [weight, setWeight] = useState(String(defaultWeight ?? 70));
   const [busy, setBusy] = useState(false);
