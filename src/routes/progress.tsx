@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { format, subDays, eachDayOfInterval, startOfWeek, startOfMonth, startOfYear, addWeeks, addMonths, addYears, differenceInDays } from "date-fns";
+import { format, subDays, eachDayOfInterval, startOfWeek, startOfMonth, startOfYear } from "date-fns";
 import { RequireAuth } from "@/components/RequireAuth";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
