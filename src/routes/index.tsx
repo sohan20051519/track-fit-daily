@@ -5,7 +5,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { ProgressRing } from "@/components/ProgressRing";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Flame, Beef, Dumbbell, ArrowUpRight, Scale, Sparkles, TrendingUp, Plus, CalendarDays } from "lucide-react";
+import { Flame, Beef, Dumbbell, ArrowUpRight, Scale, Sparkles, Plus, CalendarDays, Utensils } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
@@ -98,81 +98,184 @@ function Today() {
         </div>
       </section>
 
-      {/* Bento — stable on mobile, expands on desktop */}
+      {/* Bento */}
       <section className="grid grid-cols-6 gap-2.5 sm:gap-3 lg:grid-cols-12">
-        {/* Hero ring tile — calories */}
-        <Tile className="col-span-6 row-span-2 lg:col-span-5">
-          <Link to="/nutrition" className="flex h-full flex-col">
+        {/* Calories ring — hero */}
+        <Tile className="col-span-6 lg:col-span-5 lg:row-span-2">
+          <Link to="/nutrition" className="group flex h-full flex-col">
             <div className="flex items-start justify-between">
-              <Label icon={<Flame className="h-3 w-3" />} color="var(--color-energy)">Calories</Label>
+              <TileLabel icon={<Flame className="h-3 w-3" />} color="var(--color-energy)">Calories</TileLabel>
               <Arrow />
             </div>
-            <div className="mt-3 flex flex-1 items-center justify-center gap-5 sm:mt-4">
+            <div className="mt-3 flex flex-1 items-center justify-center gap-5">
               <ProgressRing value={calories} max={calGoal} size={132} stroke={11} color="var(--color-energy)">
                 <div className="font-mono text-2xl font-semibold leading-none tabular-nums">{calories}</div>
                 <div className="mt-1 text-[10px] text-muted-foreground">/ {calGoal}</div>
               </ProgressRing>
-              <div className="hidden flex-col gap-2 sm:flex">
-                <Stat big label="Logged" value={`${calPct}%`} />
-                <Stat label="Left" value={`${Math.max(0, calGoal - calories)}`} unit="kcal" />
+              <div className="hidden flex-col gap-3 lg:flex">
+                <MiniStat label="Logged" value={`${calPct}%`} />
+                <MiniStat label="Left" value={`${Math.max(0, calGoal - calories)}`} unit="kcal" />
               </div>
             </div>
-            <div className="mt-2 text-center text-[11px] text-muted-foreground sm:hidden">
+            <div className="mt-2 text-center text-[11px] text-muted-foreground lg:hidden">
               {Math.max(0, calGoal - calories)} kcal left
             </div>
           </Link>
         </Tile>
 
-        {/* Protein tile */}
+        {/* Protein bar tile */}
         <Tile className="col-span-3 lg:col-span-4">
           <Link to="/nutrition" className="flex h-full flex-col">
-            <Label icon={<Beef className="h-3 w-3" />} color="var(--color-vital)">Protein</Label>
-            <div className="mt-2 flex items-end justify-between gap-2">
-              <div>
-                <div className="font-mono text-3xl font-semibold leading-none tabular-nums">{Math.round(protein)}<span className="text-sm text-muted-foreground">g</span></div>
-                <div className="mt-1 text-[10px] text-muted-foreground">/ {proGoal}g</div>
+            <TileLabel icon={<Beef className="h-3 w-3" />} color="var(--color-vital)">Protein</TileLabel>
+            <div className="mt-2 flex items-baseline justify-between gap-2">
+              <div className="font-mono text-2xl font-semibold leading-none tabular-nums sm:text-3xl">
+                {Math.round(protein)}<span className="text-sm text-muted-foreground">g</span>
               </div>
-              <div className="font-mono text-[11px] font-semibold text-vital">{proPct}%</div>
+              <span className="font-mono text-[11px] font-semibold text-accent-foreground">{proPct}%</span>
             </div>
-            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-              <div className="h-full rounded-full bg-gradient-vital transition-all" style={{ width: `${proPct}%` }} />
+            <div className="mt-auto pt-3">
+              <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                <div className="h-full rounded-full bg-gradient-vital transition-all" style={{ width: `${proPct}%` }} />
+              </div>
+              <div className="mt-1.5 text-[10px] text-muted-foreground">/ {proGoal}g goal</div>
             </div>
           </Link>
         </Tile>
 
-        {/* Streak tile */}
+        {/* Streak */}
         <Tile className="col-span-3 lg:col-span-3">
-          <Label icon={<Sparkles className="h-3 w-3" />} color="var(--color-primary)">Streak</Label>
+          <TileLabel icon={<Sparkles className="h-3 w-3" />} color="var(--color-primary)">Streak</TileLabel>
           <div className="mt-2 flex items-baseline gap-1">
-            <span className="font-mono text-4xl font-semibold leading-none tabular-nums">{streak}</span>
+            <span className="font-mono text-3xl font-semibold leading-none tabular-nums sm:text-4xl">{streak}</span>
             <span className="text-[11px] text-muted-foreground">day{streak === 1 ? "" : "s"}</span>
           </div>
-          <div className="mt-2 text-[10px] text-muted-foreground">{streak > 0 ? "🔥 keep going" : "log to start"}</div>
+          <div className="mt-auto pt-2 text-[10px] text-muted-foreground">{streak > 0 ? "keep the fire going" : "log today to start"}</div>
         </Tile>
 
-        {/* Workouts tile */}
-        <Tile className="col-span-3 lg:col-span-4 group">
-          <Link to="/workouts" className="flex h-full flex-col">
+        {/* Train tile */}
+        <Tile className="col-span-3 lg:col-span-4">
+          <Link to="/workouts" className="group flex h-full flex-col">
             <div className="flex items-start justify-between">
-              <Label icon={<Dumbbell className="h-3 w-3" />} color="var(--color-strength)">Train</Label>
+              <TileLabel icon={<Dumbbell className="h-3 w-3" />} color="var(--color-strength)">Train</TileLabel>
               <Arrow />
             </div>
-            <div className="mt-2 font-mono text-3xl font-semibold leading-none tabular-nums">{exerciseCount}</div>
-            <div className="mt-1 text-[10px] text-muted-foreground">
+            <div className="mt-2 font-mono text-3xl font-semibold leading-none tabular-nums sm:text-4xl">{exerciseCount}</div>
+            <div className="mt-auto pt-2 text-[10px] text-muted-foreground">
               {todayVolume > 0 ? `${(todayVolume / 1000).toFixed(1)}k kg volume` : "tap to log"}
             </div>
           </Link>
         </Tile>
 
-        {/* Plan tile */}
+        {/* Plan dark tile */}
         <Tile className="col-span-3 lg:col-span-3" tone="dark">
-          <Link to="/workouts" className="flex h-full flex-col">
+          <Link to="/workouts" className="group flex h-full flex-col">
             <div className="flex items-start justify-between">
-              <Label muted icon={<CalendarDays className="h-3 w-3" />}>Plan</Link>
-              </div>
-            </Link>
+              <TileLabel muted icon={<CalendarDays className="h-3 w-3" />}>Plan</TileLabel>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-background/15">
+                <ArrowUpRight className="h-3 w-3" />
+              </span>
+            </div>
+            <p className="mt-2 text-xs leading-snug opacity-90">Run your weekly workout plan today.</p>
+          </Link>
+        </Tile>
+
+        {/* Quick add chips — full width */}
+        <Link to="/workouts" className="col-span-3 flex items-center gap-2.5 rounded-2xl glass-tint p-3 text-sm font-medium pressable lg:col-span-6">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate">Log workout</span>
+            <span className="block text-[10px] font-normal text-muted-foreground">add exercise</span>
+          </span>
+        </Link>
+        <Link to="/nutrition" className="col-span-3 flex items-center gap-2.5 rounded-2xl glass-tint p-3 text-sm font-medium pressable lg:col-span-6">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-vital text-accent-foreground">
+            <Utensils className="h-4 w-4" strokeWidth={2.5} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate">Log meal</span>
+            <span className="block text-[10px] font-normal text-muted-foreground">add food</span>
+          </span>
+        </Link>
+
+        {/* Consistency strip */}
+        <Tile className="col-span-6 lg:col-span-12">
+          <div className="mb-2.5 flex items-baseline justify-between">
+            <TileLabel>Last 28 days</TileLabel>
+            <span className="font-mono text-[10px] text-muted-foreground">{active.size}/28 active</span>
+          </div>
+          <div className="grid gap-1" style={{ gridTemplateColumns: "repeat(28, minmax(0, 1fr))" }}>
+            {days.map((d, i) => {
+              const k = format(d, "yyyy-MM-dd");
+              const on = active.has(k);
+              const isToday = i === days.length - 1;
+              return (
+                <div
+                  key={k}
+                  title={format(d, "MMM d")}
+                  className={cn(
+                    "aspect-square rounded-[5px] transition-all",
+                    on ? "bg-gradient-primary shadow-soft" : "bg-foreground/[0.06]",
+                    isToday && "ring-2 ring-foreground ring-offset-1 ring-offset-transparent",
+                  )}
+                />
+              );
+            })}
+          </div>
         </Tile>
       </section>
+    </div>
+  );
+}
+
+function Tile({
+  className,
+  children,
+  tone = "glass",
+}: { className?: string; children: React.ReactNode; tone?: "glass" | "dark" }) {
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-3xl p-4 transition-all hover:-translate-y-0.5 sm:p-5",
+        tone === "glass" ? "glass" : "bg-foreground text-background border border-foreground/30 shadow-card",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Arrow() {
+  return (
+    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-foreground transition-colors group-hover:bg-foreground group-hover:text-background">
+      <ArrowUpRight className="h-3.5 w-3.5" />
+    </span>
+  );
+}
+
+function TileLabel({ icon, color, children, muted }: { icon?: React.ReactNode; color?: string; children: React.ReactNode; muted?: boolean }) {
+  return (
+    <div className={cn("inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.18em]", muted ? "text-background/70" : "text-muted-foreground")}>
+      {icon && (
+        <span
+          className="flex h-4 w-4 items-center justify-center rounded-[5px]"
+          style={color ? { background: `color-mix(in oklab, ${color} 22%, transparent)`, color } : undefined}
+        >
+          {icon}
+        </span>
+      )}
+      <span>{children}</span>
+    </div>
+  );
+}
+
+function MiniStat({ label, value, unit }: { label: string; value: string; unit?: string }) {
+  return (
+    <div>
+      <div className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</div>
+      <div className="mt-0.5 font-mono text-lg font-semibold tabular-nums">{value}{unit && <span className="text-[10px] text-muted-foreground"> {unit}</span>}</div>
     </div>
   );
 }
