@@ -93,12 +93,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
               <span className="text-sm font-semibold tracking-tight">Pulse</span>
             </Link>
-            <button
-              onClick={async () => { await signOut(); navigate({ to: "/auth" }); }}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-vital text-xs font-semibold text-accent-foreground shadow-soft"
+            <Link
+              to="/settings"
+              className="flex h-8 items-center gap-1.5 rounded-full bg-muted px-2.5 text-xs font-medium"
             >
-              {(user?.email ?? "?").slice(0, 1).toUpperCase()}
-            </button>
+              <Settings className="h-3.5 w-3.5" /> Settings
+            </Link>
           </div>
         </header>
 
