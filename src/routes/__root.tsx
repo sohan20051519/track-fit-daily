@@ -3,6 +3,7 @@ import { AuthProvider } from "@/lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
+import "../styles.css";
 
 function NotFoundComponent() {
   return (
