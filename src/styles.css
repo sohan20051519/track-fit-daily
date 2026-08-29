@@ -224,7 +224,7 @@
   .dark .glass-tint { background: var(--muted); border-color: var(--border); }
 
   /* No-op specular (kept for backward compatibility) */
-  .specular { position: relative; }
+  .specular { isolation: isolate; }
 
   .bg-gradient-primary { background-image: var(--gradient-primary); }
   .bg-gradient-vital { background-image: var(--gradient-vital); }
