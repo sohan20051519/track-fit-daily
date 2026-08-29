@@ -1,7 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap');
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -224,7 +224,7 @@
   .dark .glass-tint { background: var(--muted); border-color: var(--border); }
 
   /* No-op specular (kept for backward compatibility) */
-  .specular { position: relative; }
+  .specular { isolation: isolate; }
 
   .bg-gradient-primary { background-image: var(--gradient-primary); }
   .bg-gradient-vital { background-image: var(--gradient-vital); }
